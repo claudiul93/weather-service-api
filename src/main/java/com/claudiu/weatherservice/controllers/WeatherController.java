@@ -1,18 +1,15 @@
 package com.claudiu.weatherservice.controllers;
 
-import com.claudiu.weatherservice.exceptions.CityNotFoundException;
 import com.claudiu.weatherservice.models.CityWeatherData;
 import com.claudiu.weatherservice.services.CsvWriterService;
 import com.claudiu.weatherservice.services.WeatherService;
 import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -29,9 +26,7 @@ public class WeatherController {
 
     return weatherDataFlux
         .collectSortedList(Comparator.comparing(CityWeatherData::getCity))
-        .doOnNext(csvWriterService::writeWeatherDataToCsv)
-        .onErrorMap(
-            CityNotFoundException.class, ex -> new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex));
+        .doOnNext(csvWriterService::writeWeatherDataToCsv);
   }
 
 }
